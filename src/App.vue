@@ -44,6 +44,7 @@
 
         <!-- If a budget has been selected, display transactions from that budget -->
         <div v-else>
+          <InvestmentChart :token="ynab.token" :planId="budgetId" />
           <Transactions :transactions="transactions" />
           <button class="btn btn-info" @click="budgetId = null">&lt; Select Another Budget</button>
         </div>
@@ -67,6 +68,7 @@ import Nav from './components/Nav.vue';
 import Footer from './components/Footer.vue';
 import Budgets from './components/Budgets.vue';
 import Transactions from './components/Transactions.vue';
+import InvestmentChart from './components/InvestmentChart.vue';
 
 export default {
   // The data to feed our templates
@@ -103,8 +105,8 @@ export default {
     getBudgets() {
       this.loading = true;
       this.error = null;
-      this.api.budgets.getBudgets().then((res) => {
-        this.budgets = res.data.budgets;
+      this.api.plans.getPlans().then((res) => {
+        this.budgets = res.data.plans;
       }).catch((err) => {
         this.error = err.error.detail;
       }).finally(() => {
@@ -129,7 +131,7 @@ export default {
     // https://api.ynab.com/#oauth-applications
     authorizeWithYNAB(e) {
       e.preventDefault();
-      const uri = `https://app.ynab.com/oauth/authorize?client_id=${this.ynab.clientId}&redirect_uri=${this.ynab.redirectUri}&response_type=token`;
+      const uri = `https://app.ynab.com/oauth/authorize?client_id=${this.ynab.clientId}&redirect_uri=${this.ynab.redirectUri}&response_type=token&scope=read-only`;
       location.replace(uri);
     },
     // Method to find a YNAB token
@@ -163,7 +165,8 @@ export default {
     Nav,
     Footer,
     Budgets,
-    Transactions
+    Transactions,
+    InvestmentChart
   }
 }
 </script>
